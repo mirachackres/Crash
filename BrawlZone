@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://main"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("res://main.gd")
+
+[node name="Shelly" type="CharacterBody2D" parent="."]
+texture = ExtResource("res://shelly.png")
+position = Vector2(100, 100)
+
+[node name="EnemyBot" type="CharacterBody2D" parent="."]
+texture = ExtResource("res://bot.png")
+position = Vector2(400, 100)
+extends Node2D
+
+@onready var shelly = $Shelly
+@onready var bot = $EnemyBot
+
+var cheat_enabled = false
+
+func _process(delta):
+    var dir = Vector2.ZERO
+    if Input.is_action_pressed("ui_right"):
+        dir.x += 1
+    if Input.is_action_pressed("ui_left"):
+        dir.x -= 1
+    if Input.is_action_pressed("ui_down"):
+        dir.y += 1
+    if Input.is_action_pressed("ui_up"):
+        dir.y -= 1
+    shelly.position += dir * 100 * delta
+
+    if cheat_enabled:
+        var to_bot = (bot.position - shelly.position).normalized()
+        bot.position -= to_bot * 60 * delta  # bot geri kaçar (auto dodge gibi)
+
+func _unhandled_input(event):
+    if event is InputEventKey and event.pressed:
+        if event.as_text() == "HAC32":
+            cheat_enabled = true
+            print("Cheat panel aktif!")
